@@ -65,5 +65,11 @@ std::shared_ptr<gl::Program> cache::loadProgram(std::initializer_list<fs::path> 
     return it->second;
 }
 
+void cache::clear()
+{
+    loaders.clear();
+    loadedAssets.clear();
+    programCache.clear();
+}
 
 

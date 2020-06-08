@@ -53,7 +53,7 @@ namespace util
             return it1.idx - it2.idx;
         }
 
-        const T& operator[](difference_type n) const noexcept { return idx + n; }
+        T operator[](difference_type n) const noexcept { return idx + n; }
 
         // Comparison
         friend bool operator==(const range_iterator& it1, const range_iterator& it2) noexcept { return it1.idx == it2.idx; }

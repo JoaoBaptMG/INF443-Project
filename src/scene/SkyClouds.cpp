@@ -14,7 +14,7 @@ static auto generateNoise(int seed)
 {
     // Generate a Perlin noise texture
     std::mt19937 random(seed);
-    std::uniform_real dist(-1.0f, 1.0f);
+    std::uniform_real_distribution dist(-1.0f, 1.0f);
 
     constexpr int Width = 128, Height = 128;
     util::grid<float> image(Width, Height);
@@ -44,7 +44,7 @@ SkyClouds::SkyClouds(float y, int seed) : skyY(y), time(0.0)
     cloudMesh = gl::Mesh::empty();
     
     std::mt19937 random(seed);
-    std::uniform_real agen(0.0f, Pi);
+    std::uniform_real_distribution agen(0.0f, Pi);
     for (std::size_t i = 0; i < std::size(cloudTextures); i++)
     {
         cloudTextures[i] = generateNoise(random());

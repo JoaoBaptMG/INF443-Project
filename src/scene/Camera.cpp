@@ -12,7 +12,7 @@ Camera::Camera(glfw::Window& window, float zFar) : position(), angles()
 {
     // Disable the cursor for this window, in order to take control of the camera
     window.setCursorMode(glfw::CursorMode::Disabled);
-    if (glfw::isRawMouseMotionSupported)
+    if (glfw::isRawMouseMotionSupported())
         window.setRawMouseMotionEnabled();
 
     lastPos = window.getCursorPos();

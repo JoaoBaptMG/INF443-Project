@@ -39,7 +39,7 @@ namespace glfw
 			: Window(width, height, title, Monitor(), share, windowHint) {}
 
 		// borderless full screen
-		static Window borderless(std::string title, const Monitor& monitor, const Window& share,
+		static Window borderless(std::string title, Monitor monitor, const Window& share,
 			WindowHint windowHint = WindowHint())
 		{
 			auto videoMode = monitor.getVideoMode();
@@ -53,7 +53,7 @@ namespace glfw
 		{
 			return borderless(title, Monitor::getPrimaryMonitor(), Window(), windowHint);
 		}
-		static Window borderless(std::string title, const Monitor& monitor, WindowHint windowHint = WindowHint())
+		static Window borderless(std::string title, Monitor monitor, WindowHint windowHint = WindowHint())
 		{
 			return borderless(title, monitor, Window(), windowHint);
 		}
@@ -167,7 +167,7 @@ namespace glfw
 			glfwSetWindowMonitor(window, monitor.monitor, x, y, width, height, refreshRate);
 		}
 
-		void setBorderlessFullscreen(Monitor& monitor = Monitor::getPrimaryMonitor())
+		void setBorderlessFullscreen(Monitor monitor = Monitor::getPrimaryMonitor())
 		{
 			auto videoMode = monitor.getVideoMode();
 			glfwSetWindowMonitor(window, monitor.monitor, 0, 0, videoMode.width, videoMode.height, videoMode.refreshRate);
@@ -438,7 +438,7 @@ namespace glfw
 			addInputCallback([&callback](InputCallbacks& cbs) { cbs.mouseButton = callback; });
 			glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods)
 				{ findInputCallback(window, [button, action, mods](InputCallbacks& cbs)
-					{ cbs.mouseButton(cbs.window, button, static_cast<glfw::Action>(action), glfw::ModKeyFlags(mods)); }); });
+					{ cbs.mouseButton(cbs.window, static_cast<glfw::MouseButton>(button), static_cast<glfw::Action>(action), glfw::ModKeyFlags(mods)); }); });
 		}
 
 		template <typename C>

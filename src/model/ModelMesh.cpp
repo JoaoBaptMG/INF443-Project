@@ -131,7 +131,7 @@ ModelMesh::ModelMesh(ModelMesh&& o) noexcept
     colorBuffers(std::move(o.colorBuffers)), texcoordBuffers(std::move(o.texcoordBuffers)),
     boneBuffer(o.boneBuffer), weightBuffer(o.weightBuffer), elementBuffer(o.elementBuffer),
     numElements(o.numElements), primitiveType(o.primitiveType), materialIndex(o.materialIndex),
-    boneMatrices(std::move(boneMatrices)), boneNames(std::move(boneNames)), boneNodeIndices(std::move(boneNodeIndices))
+    boneMatrices(std::move(o.boneMatrices)), boneNames(std::move(o.boneNames)), boneNodeIndices(std::move(o.boneNodeIndices))
 {
     o.vertexArray = 0;
     o.positionBuffer = 0;

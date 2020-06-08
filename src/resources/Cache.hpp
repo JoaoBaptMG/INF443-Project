@@ -17,4 +17,6 @@ namespace cache
     inline std::shared_ptr<T> load(std::filesystem::path path) { return load(path).as<T>(); }
 
     std::shared_ptr<gl::Program> loadProgram(std::initializer_list<std::filesystem::path> shaders);
+
+    void clear();
 }

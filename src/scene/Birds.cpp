@@ -4,7 +4,6 @@
 #include <glm/gtx/norm.hpp>
 #include <random>
 #include <numeric>
-#include <execution>
 
 #include "resources/Cache.hpp"
 #include "util/range.hpp"
@@ -17,6 +16,13 @@ constexpr float PointPerturbation = 16;
 constexpr float MaxHeight = 180;
 constexpr float BirdSpeed = 18;
 
+#ifdef _WIN32
+#include <execution>
+#define POLICY std::execution::par_unseq, 
+#else
+#define POLICY
+#endif
+
 using namespace scene;
 
 Birds::Birds(const Terrain& terrain, int seed, float xmin, float zmin, float xmax, float zmax)
@@ -27,12 +33,12 @@ Birds::Birds(const Terrain& terrain, int seed, float xmin, float zmin, float xma
 
     std::mt19937 random(seed);
 
-    std::size_t numBirds = std::uniform_int(MinBirds, MaxBirds)(random);
-    std::uniform_real xgen(xmin + 2 * MinRadius, xmax - 2 * MinRadius);
-    std::uniform_real zgen(zmin + 2 * MinRadius, zmax - 2 * MinRadius);
-    std::uniform_real hgen(terrain.getGlobalMaxHeight() + 16, MaxHeight);
-    std::uniform_real agen(0.0f, 2 * Pi);
-    std::uniform_real pgen(-PointPerturbation, PointPerturbation);
+    std::size_t numBirds = std::uniform_int_distribution(MinBirds, MaxBirds)(random);
+    std::uniform_real_distribution xgen(xmin + 2 * MinRadius, xmax - 2 * MinRadius);
+    std::uniform_real_distribution zgen(zmin + 2 * MinRadius, zmax - 2 * MinRadius);
+    std::uniform_real_distribution hgen(terrain.getGlobalMaxHeight() + 16, MaxHeight);
+    std::uniform_real_distribution agen(0.0f, 2 * Pi);
+    std::uniform_real_distribution pgen(-PointPerturbation, PointPerturbation);
 
     birdPaths.resize(numBirds);
     birdTimes.resize(numBirds);
@@ -47,12 +53,12 @@ Birds::Birds(const Terrain& terrain, int seed, float xmin, float zmin, float xma
 
         // Generate an ellipse
         float maxRadius = std::min({ center.x - xmin, xmax - center.x, center.z - zmin, zmax - center.z });
-        std::uniform_real radiusGen(MinRadius, maxRadius);
+        std::uniform_real_distribution radiusGen(MinRadius, maxRadius);
 
         float r1 = radiusGen(random), r2 = radiusGen(random), angle = agen(random);
         float ca = std::cos(angle), sa = std::sin(angle);
 
-        // Generate 16 control points for the cubic Bézier
+        // Generate 16 control points for the cubic Bï¿½zier
         path.resize(25);
         for (std::size_t i = 0; i < 16; i++)
         {
@@ -80,7 +86,7 @@ void Birds::update(const Terrain& terrain, double delta)
     birdModel->setTime(AnimationSpeed * time);
 
     util::range rng(std::size_t(0), birdTimes.size());
-    std::for_each(std::execution::par_unseq, rng.begin(), rng.end(), [&](std::size_t i)
+    std::for_each(POLICY rng.begin(), rng.end(), [&](std::size_t i)
         { 
             birdTimes[i] = nextStep(birdPaths[i], birdTimes[i], BirdSpeed * delta); 
             birdPositions[i] = birdPosition(birdPaths[i], birdTimes[i]);
@@ -124,7 +130,7 @@ glm::vec3 Birds::birdPosition(const std::vector<glm::vec3>& points, float t) con
     t -= segment;
     auto ct = 1 - t;
 
-    // Cubic Bézier curve
+    // Cubic Bï¿½zier curve
     return a * ct * ct * ct + 3.0f * b * ct * ct * t + 3.0f * c * ct * t * t + d * t * t * t;
 }
 
@@ -143,7 +149,7 @@ glm::vec3 Birds::birdVelocity(const std::vector<glm::vec3>& points, float t) con
     t -= segment;
     auto ct = 1 - t;
 
-    // Derivative of cubic Bézier curve
+    // Derivative of cubic Bï¿½zier curve
     return 3.0f * ((b - a) * ct * ct + 2.0f * (c - b) * ct * t + (d - c) * t * t);
 }
 

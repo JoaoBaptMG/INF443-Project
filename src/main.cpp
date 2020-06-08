@@ -8,7 +8,7 @@
 #include "scene/Scene.hpp"
 #include "scene/ImGui.hpp"
 #include "resources/FileUtils.hpp"
-
+#include "resources/Cache.hpp"
 
 using HighClock = std::chrono::high_resolution_clock;
 
@@ -71,7 +71,12 @@ int main()
             glfw::pollEvents();
 
             then = now;
+
+            if (window.getKey(glfw::key::Escape))
+                window.setShouldClose();
         }
+
+        cache::clear();
     }
     catch (std::exception &exc)
     {

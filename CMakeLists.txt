@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories("external" "src")
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(assimp REQUIRED)
 
@@ -33,4 +35,4 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio")
 endif()
 
 add_executable(INF443Project ${SRCS})
-target_link_libraries(INF443Project glfw assimp::assimp)
+target_link_libraries(INF443Project Threads::Threads glfw assimp::assimp ${CMAKE_DL_LIBS})

@@ -45,7 +45,7 @@ namespace gl
         if (index == -1 || data == nullptr || size == 0) return 0;
         auto buffer = createAndFillBuffer(data, size);
         glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, vector_traits<T>::size, ParamFromType<vector_traits<T>::type>, normalized, sizeof(T), nullptr);
+        glVertexAttribPointer(index, vector_traits<T>::size, ParamFromType<typename vector_traits<T>::type>, normalized, sizeof(T), nullptr);
 
         return buffer;
     }
@@ -56,7 +56,7 @@ namespace gl
         if (index == -1 || data == nullptr || size == 0) return 0;
         auto buffer = createAndFillBuffer(data, size);
         glEnableVertexAttribArray(index);
-        glVertexAttribIPointer(index, vector_traits<T>::size, ParamFromType<vector_traits<T>::type>, sizeof(T), nullptr);
+        glVertexAttribIPointer(index, vector_traits<T>::size, ParamFromType<typename vector_traits<T>::type>, sizeof(T), nullptr);
 
         return buffer;
     }

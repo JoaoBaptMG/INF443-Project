@@ -31,6 +31,7 @@ namespace scene
 
     public:
         Scene(glfw::Window& window);
+        ~Scene();
 
         void update(double delta);
         void draw(double delta);

@@ -140,7 +140,7 @@ namespace gl
 
         void generateMipmap() { bind(); glGenerateMipmap(Target); }
 
-        template <typename T, typename = std::enable_if_t<NumDimensions == 1>>
+        template <typename T>
         void assign(GLint level, InternalFormat internalFormat, GLsizei width, Format format, const T* data)
         {
             bind(); glTexImage1D(Target, level, static_cast<GLenum>(internalFormat), width, 
@@ -152,7 +152,7 @@ namespace gl
             assign(level, internalFormat, width, deriveDefaultFormat(internalFormat), static_cast<const float*>(nullptr));
         }
 
-        template <typename T, typename = std::enable_if_t<NumDimensions == 2>>
+        template <typename T>
         void assign(GLint level, InternalFormat internalFormat, GLsizei width, GLsizei height, Format format, const T* data)
         {
             bind(); glTexImage2D(Target, level, static_cast<GLenum>(internalFormat), width, height,
@@ -164,7 +164,7 @@ namespace gl
             assign(level, internalFormat, width, height, deriveDefaultFormat(internalFormat), static_cast<const float*>(nullptr));
         }
 
-        template <typename T, typename = std::enable_if_t<NumDimensions == 3>>
+        template <typename T>
         void assign(GLint level, InternalFormat internalFormat, GLsizei width, GLsizei height, GLsizei depth, Format format, const T* data)
         {
             bind(); glTexImage3D(Target, level, static_cast<GLenum>(internalFormat), width, height, depth,

@@ -16,9 +16,19 @@ namespace fs = std::filesystem;
 
 auto nextToken(const std::string_view& str, std::size_t val = 0)
 {
-    auto nextNonSpace = str.find_first_not_of(" \t", val);
-    auto nextSpace = str.find_first_of(" \t", nextNonSpace);
+    auto nextNonSpace = str.find_first_not_of(" \t\r\n", val);
+    auto nextSpace = str.find_first_of(" \t\r\n", nextNonSpace);
     return str.substr(nextNonSpace, nextSpace - nextNonSpace);
+}
+
+auto nextQuotes(const std::string_view& str, std::size_t val = 0)
+{
+    auto nextNonSpace = str.find_first_not_of(" \t\r\n", val);
+    if (nextNonSpace == std::string_view::npos || str[nextNonSpace] != '"') 
+        return std::string_view();
+    
+    auto nextQuotes = str.find_first_of("\"", nextNonSpace + 1);
+    return str.substr(nextNonSpace + 1, nextQuotes - nextNonSpace - 1);
 }
 
 gl::Shader file_utils::loadShader(fs::path path, gl::ShaderType type)
@@ -83,13 +93,11 @@ gl::Shader file_utils::loadShader(fs::path path, gl::ShaderType type)
                         throw gl::ShaderException("Too many nested includes!");
 
                     // Include
-                    auto val = nextToken(linev, sizeof("#include") - 1);
-
-                    if (val.front() != '"' || val.back() != '"')
-                        throw gl::ShaderException("Invalid path value for include!");
+                    auto val = nextQuotes(linev, sizeof("#include") - 1);
+                    if (val.empty()) throw gl::ShaderException("Invalid value for include!");
 
                     // Compute the path
-                    auto nextPath = path.parent_path() / val.substr(1, val.size() - 2);
+                    auto nextPath = path.parent_path() / val;
 
                     // Open the file
                     std::ifstream next(nextPath);

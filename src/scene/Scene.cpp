@@ -45,6 +45,11 @@ Scene::Scene(glfw::Window& window) : window(window), time(0), camera(window, std
     terrain.setColors(colors::PastelGreen, colors::SandDune, colors::DarkBrown);
 }
 
+Scene::~Scene()
+{
+    while (!queries.empty()) queries.pop();
+}
+
 void Scene::update(double delta)
 {
     time += delta;
@@ -70,7 +75,7 @@ void Scene::draw(double delta)
     if (value != (GLuint64)-1)
     {
         ImGui::Begin("Performance counter", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("GPU query timer: %d.%04d ms", value / 1000000, (value / 100) % 10000);
+        ImGui::Text("GPU query timer: %2lu.%04lu ms", value / 1000000, (value / 100) % 10000);
         ImGui::End();
     }
 

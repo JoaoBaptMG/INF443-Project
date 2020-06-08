@@ -62,7 +62,7 @@ MeshBuilder gl::operator+(const MeshBuilder& mb1, const MeshBuilder& mb2)
         if (mb1.indices.empty()) std::iota(mesh.indices.begin(), mesh.indices.begin() + numElements1, 0);
 
         if (mb2.indices.empty()) std::iota(mesh.indices.begin() + numElements1, mesh.indices.end(), expSize1);
-        else std::for_each(mesh.indices.begin() + numElements1, mesh.indices.end(), [=](auto& idx) { idx += unsigned int(expSize1); });
+        else std::for_each(mesh.indices.begin() + numElements1, mesh.indices.end(), [=](auto& idx) { idx += (unsigned int)expSize1; });
     }
 
     return mesh;
@@ -180,7 +180,7 @@ void reconfigureVertexArrayStream(GLuint& buffer, const std::vector<T>& data, GL
     if (buffer != 0)
     {
         glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, vector_traits<T>::size, ParamFromType<vector_traits<T>::type>, normalized, sizeof(T), nullptr);
+        glVertexAttribPointer(index, vector_traits<T>::size, ParamFromType<typename vector_traits<T>::type>, normalized, sizeof(T), nullptr);
     }
     else glDisableVertexAttribArray(index);
 }

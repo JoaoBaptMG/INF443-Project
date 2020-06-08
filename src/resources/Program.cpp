@@ -3,8 +3,6 @@
 #include "wrappers/glException.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
-
 using namespace gl;
 
 thread_local GLuint Program::lastUsedProgram = 0;
@@ -15,7 +13,6 @@ void Program::relink()
     GLint status;
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (!status) throw ProgramException("Failed to link program: " + getInfoLog());
-    std::cout << "Program info log: " << getInfoLog() << std::endl;
 }
 
 void Program::use() const

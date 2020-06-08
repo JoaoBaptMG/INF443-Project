@@ -2,8 +2,6 @@
 
 #include "wrappers/glException.hpp"
 
-#include <iostream>
-
 using namespace gl;
 
 auto shaderTypeToString(ShaderType type)
@@ -31,7 +29,6 @@ Shader::Shader(ShaderType type, const char* source)
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (!status) throw ShaderException(std::string("Failed to compile ") + shaderTypeToString(type) + " shader: " + getInfoLog());
-    std::cout << "This " << shaderTypeToString(type) << " shader info log: " << getInfoLog() << std::endl;
 }
 
 void Shader::setName(const std::string& name) const

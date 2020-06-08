@@ -5,13 +5,19 @@
 #include <thread>
 #include <random>
 #include <algorithm>
-#include <execution>
 #include "resources/Cache.hpp"
 #include "util/Frustum.hpp"
 #include "util/range.hpp"
 #include "mesh_utils.hpp"
 
 #include <glm/gtx/transform.hpp>
+
+#ifdef _WIN32
+#include <execution>
+#define POLICY std::execution::par_unseq, 
+#else
+#define POLICY
+#endif
 
 using namespace scene;
 
@@ -239,8 +245,8 @@ void Terrain::buildTrees(int seed)
             indices.emplace_back(i, j);
     std::shuffle(indices.begin(), indices.end(), random);
 
-    std::uniform_real heightGen(MinTrunkHeight, MaxTrunkHeight);
-    std::uniform_real sizeGen(MinConeSize, MaxConeSize);
+    std::uniform_real_distribution heightGen(MinTrunkHeight, MaxTrunkHeight);
+    std::uniform_real_distribution sizeGen(MinConeSize, MaxConeSize);
     treeHeights.resize(width, height, 0);
 
     trunkTransforms.reserve(numTrees);
@@ -257,14 +263,23 @@ void Terrain::buildTrees(int seed)
         float ny = std::min({ nys(i, j), nys(i + 1, j), nys(i - 1, j), nys(i, j - 1), nys(i, j + 1) });
         if (ny < 0.75) continue;
 
+        bool skipTree = false;
+
         // Don't place trees too close to each other
         for (ssize ci = -radius; ci <= radius; ci++)
         {
             ssize mj = radius - std::abs(ci);
             for (ssize cj = -mj; cj <= mj; cj++)
                 if (treeHeights(i + ci, j + cj) > 0)
-                    goto continueOuter;
+                {
+                    skipTree = true;
+                    break;
+                }
+
+            if (skipTree) break;
         }
+
+        if (skipTree) continue;
 
         float trunkHeight = heightGen(random);
         float coneSize = sizeGen(random);
@@ -285,22 +300,20 @@ void Terrain::buildTrees(int seed)
         coneTransforms.emplace_back(glm::translate(conePos) * glm::scale(coneScale));
 
         if (trunkTransforms.size() == numTrees) break;
-
-    continueOuter:; // Continue to the next tree
     }
 
     // Generate the shearing parameters
     constexpr float MaxShearingRadius = 0.25;
-    std::uniform_real radiusGen(0.0f, MaxShearingRadius);
+    std::uniform_real_distribution radiusGen(0.0f, MaxShearingRadius);
     shearingEllipse = glm::vec2(radiusGen(random), radiusGen(random));
-    shearingRotation = std::uniform_real(0.0f, 2 * Pi)(random);
+    shearingRotation = std::uniform_real_distribution(0.0f, 2 * Pi)(random);
 }
 
 constexpr GLsizei TextureSize = 64;
 void Terrain::generateDirtTexture(int seed)
 {
     std::mt19937 random(seed);
-    std::uniform_real floatGen(0.4f, 1.0f);
+    std::uniform_real_distribution floatGen(0.4f, 1.0f);
 
     // Create the size texture
     std::vector<float> image(TextureSize * TextureSize * TextureSize);
@@ -333,7 +346,7 @@ void Terrain::update(double delta)
     shearing[1][2] = -sr * shear.x + cr * shear.y;
 
     util::range rng(std::size_t(0), treePositions.size());
-    std::for_each(std::execution::par_unseq, rng.begin(), rng.end(), [&](std::size_t i)
+    std::for_each(POLICY rng.begin(), rng.end(), [&](std::size_t i)
         {
             // Compute the final transforms
             trunkFinalTransforms[i] = glm::translate(treePositions[i]) * shearing * trunkTransforms[i];
