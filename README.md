@@ -18,12 +18,12 @@ Demonstration
 
 [![Terrain: final project on graphics programming class using C++ and OpenGL](https://img.youtube.com/vi/ZTXRNSTtSrg/0.jpg)](https://www.youtube.com/watch?v=ZTXRNSTtSrg "Terrain: final project on graphics programming class using C++ and OpenGL")
 
-![img/screenshot1.png]
-![img/screenshot2.png]
-![img/screenshot3.png]
-![img/screenshot4.png]
-![img/screenshot5.png]
-![img/screenshot6.png]
+![Screenshot 1](img/screenshot1.png)
+![Screenshot 2](img/screenshot2.png)
+![Screenshot 3](img/screenshot3.png)
+![Screenshot 4](img/screenshot4.png)
+![Screenshot 5](img/screenshot5.png)
+![Screenshot 6](img/screenshot6.png)
 
 License
 -------
