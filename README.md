@@ -13,7 +13,19 @@ Running
 
 **Warning:** make sure you run the executable on the root folder of the repository (i.e. the parent directory to *resources*), otherwise the executable cannot find the shaders and models required for it to work.
 
+Demonstration
+-------------
+
+[![Terrain: final project on graphics programming class using C++ and OpenGL](https://img.youtube.com/vi/ZTXRNSTtSrg/0.jpg)](https://www.youtube.com/watch?v=ZTXRNSTtSrg "Terrain: final project on graphics programming class using C++ and OpenGL")
+
+![img/screenshot1.png]
+![img/screenshot2.png]
+![img/screenshot3.png]
+![img/screenshot4.png]
+![img/screenshot5.png]
+![img/screenshot6.png]
+
 License
 -------
 
-No modification or use is permitted without authorization. After the project is submitted, it will be republished under the MIT License.
+This source code is under the MIT License. As such, all permissions apply to the code.
