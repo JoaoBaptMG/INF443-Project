@@ -26,11 +26,13 @@ namespace glfw
 			glfwSetMonitorCallback([](GLFWmonitor* monitor, int event)
 				{
 					// call the monitor callback
+					std::unique_lock lock(monitorCallbackMutex);
 					if (monitorCallback) monitorCallback(Monitor(monitor),
 						event == GLFW_CONNECTED ? MonitorEvent::Connected : MonitorEvent::Disconnected);
 				});
 		}
 
+		static inline std::mutex monitorCallbackMutex;
 		static inline std::function<void(Monitor, MonitorEvent)> monitorCallback;
 
 		GLFWmonitor* monitor;
@@ -42,7 +44,7 @@ namespace glfw
 		static auto getMonitors()
 		{ 
 			int cnt;
-			auto monitorPtr = glfwGetMonitors(&cnt);
+			auto monitorPtr = checkError(glfwGetMonitors(&cnt));
 
 			// glfw::Monitor is pointer-interconvertible with GLFWmonitor*
 			return util::array_view(reinterpret_cast<Monitor*>(monitorPtr), cnt);
@@ -62,16 +64,17 @@ namespace glfw
 		auto getVideoModes() const
 		{
 			int count;
-			auto modes = glfwGetVideoModes(monitor, &count);
+			auto modes = checkError(glfwGetVideoModes(monitor, &count));
 			return util::array_view(modes, count);
 		}
 
-		const VideoMode& getVideoMode() const { return *glfwGetVideoMode(monitor); }
+		const VideoMode& getVideoMode() const { return *checkError(glfwGetVideoMode(monitor)); }
 
 		auto getPhysicalSize() const
 		{
 			IntCoord coord;
 			glfwGetMonitorPhysicalSize(monitor, &coord.x, &coord.y);
+			checkError();
 			return coord;
 		}
 
@@ -79,6 +82,7 @@ namespace glfw
 		{
 			FloatCoord coord;
 			glfwGetMonitorContentScale(monitor, &coord.x, &coord.y);
+			checkError();
 			return coord;
 		}
 
@@ -86,6 +90,7 @@ namespace glfw
 		{
 			IntCoord coord;
 			glfwGetMonitorPos(monitor, &coord.x, &coord.y);
+			checkError();
 			return coord;
 		}
 
@@ -93,15 +98,16 @@ namespace glfw
 		{
 			IntRectangle wa;
 			glfwGetMonitorWorkarea(monitor, &wa.x, &wa.y, &wa.width, &wa.height);
+			checkError();
 			return wa;
 		}
 
-		auto getName() const { return std::string_view(glfwGetMonitorName(monitor)); }
+		auto getName() const { return std::string_view(checkError(glfwGetMonitorName(monitor))); }
 
-		void setGammaRamp(const GammaRamp& ramp) { glfwSetGammaRamp(monitor, &ramp); }
-		const GammaRamp& getGammaRamp() const { return *glfwGetGammaRamp(monitor); }
+		void setGammaRamp(const GammaRamp& ramp) { glfwSetGammaRamp(monitor, &ramp); checkError(); }
+		const GammaRamp& getGammaRamp() const { return *checkError(glfwGetGammaRamp(monitor)); }
 
-		void setGamma(float gamma) { glfwSetGamma(monitor, gamma); }
+		void setGamma(float gamma) { glfwSetGamma(monitor, gamma); checkError(); }
 
 		// Friends
 		friend class Window;

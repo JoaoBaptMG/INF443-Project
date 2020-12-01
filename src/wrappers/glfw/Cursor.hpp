@@ -11,7 +11,7 @@ namespace glfw
         Arrow = 0x36001, TextInput, Crosshair, Hand, HResize, VResize
     };
 
-    class Cursor
+    class alignas(GLFWcursor*) Cursor
     {
         GLFWcursor* cursor;
 
@@ -19,13 +19,13 @@ namespace glfw
         Cursor(const GLFWimage& image, int xhot, int yhot)
         {
             cursor = glfwCreateCursor(&image, xhot, yhot);
-           
+            checkError();
         }
 
         Cursor(CursorShape shape)
         {
             cursor = glfwCreateStandardCursor(static_cast<int>(shape));
-           
+            checkError();
         }
 
         // Disable copying, enable moving

@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Exception.hpp"
 
 namespace glfw
 {
@@ -130,8 +131,8 @@ namespace glfw
         constexpr auto Menu = GLFW_KEY_MENU;
         constexpr auto Last = GLFW_KEY_LAST;
 
-        inline static auto getName(int key, int code = 0) { return glfwGetKeyName(key, code); }
-        inline static auto getScancode(int key) { return glfwGetKeyScancode(key); }
+        inline static auto getName(int key, int code = 0) { return checkError(glfwGetKeyName(key, code)); }
+        inline static auto getScancode(int key) { return checkError(glfwGetKeyScancode(key)); }
     };
 }
 

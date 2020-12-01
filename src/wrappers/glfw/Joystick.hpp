@@ -47,29 +47,29 @@ namespace glfw
         auto getAxes() const
         {
             int count;
-            auto axes = glfwGetJoystickAxes(jid, &count);
+            auto axes = checkError(glfwGetJoystickAxes(jid, &count));
             return util::array_view(axes, count);
         }
 
         auto getButtons() const
         {
             int count;
-            auto buttons = glfwGetJoystickButtons(jid, &count);
+            auto buttons = checkError(glfwGetJoystickButtons(jid, &count));
             return util::array_view(reinterpret_cast<const Action*>(buttons), count);
         }
 
         auto getHats() const
         {
             int count;
-            auto hats = glfwGetJoystickHats(jid, &count);
+            auto hats = checkError(glfwGetJoystickHats(jid, &count));
             return util::array_view(reinterpret_cast<const JoystickHatFlags*>(hats), count);
         }
         // JoystickHatFlags is pointer-interconvertible with unsigned char
 
-        auto getName() const { return glfwGetJoystickName(jid); }
-        auto getGUID() const { return glfwGetJoystickGUID(jid); }
+        auto getName() const { return checkError(glfwGetJoystickName(jid)); }
+        auto getGUID() const { return checkError(glfwGetJoystickGUID(jid)); }
 
-        bool isGamepad() const { return glfwJoystickIsGamepad(jid); }
+        bool isGamepad() const { return checkError(glfwJoystickIsGamepad(jid)); }
 
         template <typename C>
         static void setCallback(C callback)
@@ -87,6 +87,8 @@ namespace glfw
                     joystickCallback(Joystick(jid), static_cast<JoystickEvent>(event));
                 });
         }
+
+        friend class Gamepad;
     };
 
     using GamepadState = GLFWgamepadstate;
@@ -96,24 +98,27 @@ namespace glfw
         int jid;
 
     public:
-        Gamepad(int jid) : jid(jid)
+        Gamepad(Joystick joystick) : jid(joystick.jid)
         {
-            if (!Joystick(jid).isGamepad())
+            if (!joystick.isGamepad())
                 throw InvalidValue("Current joystick is not a gamepad!");
         }
 
-        auto getName() const { return glfwGetGamepadName(jid); }
+        Gamepad(int jid) : Gamepad(Joystick(jid)) {}
+
+        auto getName() const { return checkError(glfwGetGamepadName(jid)); }
 
         auto getState() const
         {
             GamepadState state;
             glfwGetGamepadState(jid, &state);
+            checkError();
             return state;
         }
 
         static void updateMappings(const char* string)
         {
-            if (!glfwUpdateGamepadMappings(string))
+            if (!checkError(glfwUpdateGamepadMappings(string)))
                 throw PlatformError("An error occurred while trying to update the gamepad mappings!");
         }
     };

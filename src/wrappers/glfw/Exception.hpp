@@ -6,12 +6,17 @@
 
 namespace glfw
 {
-#define EXCEPTION_CLASS(name) class name final : public std::runtime_error \
+	class Exception : public std::runtime_error
+	{
+	public:
+		Exception(const char* what) : runtime_error(what) {}
+	};
+
+#define EXCEPTION_CLASS(name) class name final : public Exception \
 {\
 public:\
-	name(const char* what) : runtime_error(what) {}\
+	name(const char* what) : Exception(what) {}\
 }
-
 	EXCEPTION_CLASS(NotInitialized);
 	EXCEPTION_CLASS(NoCurrentContext);
 	EXCEPTION_CLASS(InvalidEnum);
@@ -43,8 +48,9 @@ public:\
 
 	inline static void checkError()
 	{
-		const char* desc;
-		checkError(glfwGetError(&desc), desc);
+		const char* desc = nullptr;
+		int error = glfwGetError(&desc);
+		checkError(error, desc);
 	}
 
 	template <typename T>
